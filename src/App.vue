@@ -1,7 +1,7 @@
 <template>
-	<main class="container mx-5 my-8 space-y-8">
-		<h1 class="text-4xl font-medium">Event Booking App</h1>
-		<h2 class="text-2xl font-medium">All Events</h2>
+	<main class="container mx-auto my-8 space-y-5">
+		<h1 class="text-4xl font-medium ml-5">Event Booking App</h1>
+		<h2 class="text-2xl font-medium ml-5">All Events</h2>
 		<section class="grid grid-cols-2 gap-3" v-if="!eventsLoading">
 			<EventCard
 				v-for="event in events"
@@ -16,7 +16,7 @@
 			<LoadingCard v-for="i in 4" :key="i"/>
 		</section>
 
-		<h2 class="text-2xl font-medium">Your Bookings</h2>
+		<h2 class="text-2xl font-medium ml-5">Your Bookings</h2>
 		<section class="grid grid-cols gap-2">
 			<BookingItem
 				v-for="b in 3"
