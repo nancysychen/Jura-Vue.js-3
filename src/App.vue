@@ -13,14 +13,15 @@
 			/>
 		</section>
 		<section v-else class="grid grid-cols-2 gap-3">
-			<LoadingCard v-for="i in 4" :key="i"/>
+			<LoadingCard v-for="i in 4" :key="i" />
 		</section>
 
 		<h2 class="text-2xl font-medium ml-5">Your Bookings</h2>
 		<section class="grid gap-2">
 			<BookingItem
-				v-for="b in 3"
-				:key="b"
+				v-for="booking in bookings"
+				:key="booking.id"
+				:title="booking.eventTitle"
 				@cancelar="console.log(' testando emit de cancelar')"
 			/>
 		</section>
@@ -28,12 +29,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUpdated } from 'vue';
 import EventCard from '@/components/EventCard.vue';
 import BookingItem from '@/components/BookingItem.vue';
 import LoadingCard from './components/LoadingCard.vue';
 
 const events = ref([]);
+const bookings = ref([]);
 const eventsLoading = ref(false);
 const fetchEvents = async () => {
 	eventsLoading.value = true;
@@ -44,26 +46,33 @@ const fetchEvents = async () => {
 		eventsLoading.value = false;
 	}
 };
+
+const fetchBookings = async () => {
+	const response = await fetch('http://localhost:3001/bookings');
+	bookings.value = await response.json();
+};
 onMounted(() => {
 	fetchEvents();
 });
 
-
+onUpdated(() => {
+	fetchBookings();
+});
 
 const handleRegistration = async (event) => {
 	const newBooking = {
 		id: Date.now().toString(),
 		userId: 1,
 		eventId: event.id,
-		eventTitle: event.title
+		eventTitle: event.title,
 	};
 	await fetch('http://localhost:3001/bookings', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({
 			...newBooking,
-			status: 'confirmed'
-		})
+			status: 'confirmed',
+		}),
 	});
-}
+};
 </script>
