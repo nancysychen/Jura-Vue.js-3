@@ -1,6 +1,6 @@
 <template>
 	<SingleCard>
-        <div class="border border-gray-200 bg-white rounded-md">
+        <div class="border border-gray-400 bg-white rounded-md">
             <h3 v-if="$slots.title" class="p-4 font-medium text-xl border-b border-gray-200">
                 <slot name="title"></slot>
             </h3>
