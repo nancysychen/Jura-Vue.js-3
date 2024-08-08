@@ -64,6 +64,13 @@
       "eventId": "2",
       "eventTitle": "Vue Conference 2023",
       "status": "confirmed"
+    },
+    {
+      "id": "1723151309431",
+      "userId": 1,
+      "eventId": "3",
+      "eventTitle": "PHP Conference 2022",
+      "status": "confirmed"
     }
   ]
 }
