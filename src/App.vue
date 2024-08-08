@@ -9,7 +9,7 @@
 				:title="event.title"
 				:when="event.date"
 				:description="event.description"
-				@register="registerEvent"
+				@register="handleRegistration(event)"
 			/>
 		</section>
 		<section v-else class="grid grid-cols-2 gap-3">
@@ -17,7 +17,7 @@
 		</section>
 
 		<h2 class="text-2xl font-medium ml-5">Your Bookings</h2>
-		<section class="grid grid-cols gap-2">
+		<section class="grid gap-2">
 			<BookingItem
 				v-for="b in 3"
 				:key="b"
@@ -48,7 +48,22 @@ onMounted(() => {
 	fetchEvents();
 });
 
-const registerEvent = () => {
-	console.log('evento registrado');
-};
+
+
+const handleRegistration = async (event) => {
+	const newBooking = {
+		id: Date.now().toString(),
+		userId: 1,
+		eventId: event.id,
+		eventTitle: event.title
+	};
+	await fetch('http://localhost:3001/bookings', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			...newBooking,
+			status: 'confirmed'
+		})
+	});
+}
 </script>
