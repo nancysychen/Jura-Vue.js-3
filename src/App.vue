@@ -23,7 +23,7 @@
 				:key="booking.id"
 				:title="booking.eventTitle"
 				:status="booking.status"
-				@cancelar="console.log(' testando emit de cancelar')"
+				@cancelar="cancelBooking(booking.id)"
 			/>
 		</section>
 		<section v-else class="grid gap-2">
@@ -43,7 +43,9 @@ const events = ref([]);
 const bookings = ref([]);
 const eventsLoading = ref(false);
 const bookingsLoading = ref(false);
-
+const findBookingById = (id) => {  
+	return bookings.value.findIndex((b) => b.id === id);
+};
 const fetchEvents = async () => {
 	eventsLoading.value = true;
 	try {
@@ -69,7 +71,11 @@ onMounted(() => {
 });
 
 const handleRegistration = async (event) => {
-	if (bookings.value.some(booking => booking.eventId === event.id && booking.userId === 1)) {
+	if (
+		bookings.value.some(
+			(booking) => booking.eventId === event.id && booking.userId === 1
+		)
+	) {
 		alert('You are already registered.');
 		return;
 	}
@@ -92,14 +98,31 @@ const handleRegistration = async (event) => {
 			}),
 		});
 		if (response.ok) {
-			const index = bookings.value.findIndex(b => b.id === newBooking.id);
-			bookings.value[index] = await response.json()
+			const index = findBookingById(newBooking.id);
+			bookings.value[index] = await response.json();
 		} else {
-			throw new Error('Failed to confirm booking')
+			throw new Error('Failed to confirm booking');
 		}
 	} catch (error) {
-		console.error(`Failed to register for event: `, e)
-		bookings.value.filter(b=>b.id!==newBooking.id)
+		console.error(`Failed to register for event: `, e);
+		bookings.value.filter((b) => b.id !== newBooking.id);
+	}
+};
+const cancelBooking = async (bookingId) => {
+	const index = findBookingById(bookingId);
+	const originalBooking = bookings.value[index];
+	bookings.value.splice(index, 1);
+
+	try {
+		const response = await fetch(`http://localhost:3001/bookings/${bookingId}`, {
+			method: 'DELETE'
+		});
+		if (!response.ok) {
+			throw new Error('Booking cannot be canceled');
+		}
+	} catch (error) {
+		console.error(`Failed to cancel booking: `, error);
+		bookings.value.splice(index, 0, originalBooking);
 	}
 };
 </script>
