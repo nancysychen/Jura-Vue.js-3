@@ -22,11 +22,12 @@
 				v-for="booking in bookings"
 				:key="booking.id"
 				:title="booking.eventTitle"
+				:status="booking.status"
 				@cancelar="console.log(' testando emit de cancelar')"
 			/>
 		</section>
 		<section v-else class="grid gap-2">
-			<LoadingBookings v-for="i in 4" :key="i"/>
+			<LoadingBookings v-for="i in 4" :key="i" />
 		</section>
 	</main>
 </template>
@@ -54,14 +55,12 @@ const fetchEvents = async () => {
 };
 
 const fetchBookings = async () => {
-	bookingsLoading.value = true;	
+	bookingsLoading.value = true;
 	try {
 		const response = await fetch('http://localhost:3001/bookings');
 		bookings.value = await response.json();
-		
 	} finally {
 		bookingsLoading.value = false;
-		
 	}
 };
 onMounted(() => {
@@ -69,22 +68,38 @@ onMounted(() => {
 	fetchBookings();
 });
 
-
-
 const handleRegistration = async (event) => {
+	if (bookings.value.some(booking => booking.eventId === event.id && booking.userId === 1)) {
+		alert('You are already registered.');
+		return;
+	}
 	const newBooking = {
 		id: Date.now().toString(),
 		userId: 1,
 		eventId: event.id,
 		eventTitle: event.title,
+		status: 'pending',
 	};
-	await fetch('http://localhost:3001/bookings', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			...newBooking,
-			status: 'confirmed',
-		}),
-	});
+	bookings.value.push(newBooking);
+
+	try {
+		const response = await fetch('http://localhost:3001/bookings', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				...newBooking,
+				status: 'confirmed',
+			}),
+		});
+		if (response.ok) {
+			const index = bookings.value.findIndex(b => b.id === newBooking.id);
+			bookings.value[index] = await response.json()
+		} else {
+			throw new Error('Failed to confirm booking')
+		}
+	} catch (error) {
+		console.error(`Failed to register for event: `, e)
+		bookings.value.filter(b=>b.id!==newBooking.id)
+	}
 };
 </script>

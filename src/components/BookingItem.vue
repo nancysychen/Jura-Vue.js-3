@@ -3,6 +3,7 @@
 	
 			<div class="flex justify-between">
 				<div>{{ title }}</div>
+				<div>{{ status }}</div>
 				<Button variant="danger" @click="$emit('cancelar')">Cancel</Button>
 			</div>
 
@@ -16,6 +17,7 @@ import SectionCard from './SectionCard.vue';
 defineEmits(['cancelar']);
 defineProps({
 	title: String,
+	status:String
 });
 </script>
 
