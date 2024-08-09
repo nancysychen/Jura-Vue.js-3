@@ -22,7 +22,7 @@ defineProps({
 	description: String
 });
 
-defineEmits(['register','teste']);
+defineEmits(['register']);
 </script>
 
 <style scoped></style>
